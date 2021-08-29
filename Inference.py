@@ -213,14 +213,16 @@ def inference(photo_filename):
               "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard",
               "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana",
               "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake",
-              "chair", "sofa", "pottedplant", "bed", "diningtable", "toilet", "tvmonitor", "laptop", "mouse",
+              "chair", "sofa", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse",
               "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator",
               "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
     # get the details of the detected objects
     v_boxes, v_labels, v_scores = get_boxes(boxes, labels, class_threshold)
+
     # summarize what we found
-    for i in range(len(v_boxes)):
-        print(v_labels[i], v_scores[i])
+    # for i in range(len(v_boxes)):
+        # print(v_labels[i], v_scores[i])
+
     # draw what we found
     draw_boxes(photo_filename, v_boxes, v_labels, v_scores)
 

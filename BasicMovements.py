@@ -13,6 +13,6 @@ tello.connect()
 tello.takeoff()
 
 while tello.get_battery() > 20:
-    pass
+    tello.get_video_capture()
 
 tello.land()
