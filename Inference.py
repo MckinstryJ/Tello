@@ -166,7 +166,8 @@ def draw_boxes(filename, v_boxes, v_labels, v_scores):
     # get the context for drawing boxes
     ax = pyplot.gca()
     # plot each box
-    for i in range(len(v_boxes)):
+    num_boxes = len(v_boxes)
+    for i in range(num_boxes if num_boxes < 10 else 10):
         box = v_boxes[i]
         # get coordinates
         y1, x1, y2, x2 = box.ymin, box.xmin, box.ymax, box.xmax
@@ -182,21 +183,33 @@ def draw_boxes(filename, v_boxes, v_labels, v_scores):
     pyplot.savefig(f'./results/temp.jpg')
 
 
+# load yolov3 weights
+model = load_model('h5/yolov3.h5')
+# define the expected input shape for the weights
+input_w, input_h = 416, 416
+# define the anchors
+anchors = [[116, 90, 156, 198, 373, 326], [30, 61, 62, 45, 59, 119], [10, 13, 16, 30, 33, 23]]
+# define the probability threshold for detected objects
+class_threshold = 0.6
+# define the labels
+labels = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck",
+          "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
+          "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe",
+          "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard",
+          "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard",
+          "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana",
+          "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake",
+          "chair", "sofa", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse",
+          "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator",
+          "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
+
+
 def inference(photo_filename):
-    # load yolov3 weights
-    model = load_model('h5/yolov3.h5')
-    # define the expected input shape for the weights
-    input_w, input_h = 416, 416
     # load and prepare image
     image, image_w, image_h = load_image_pixels(photo_filename, (input_w, input_h))
     # make prediction
     yhat = model.predict(image)
-    # summarize the shape of the list of arrays
-    print([a.shape for a in yhat])
-    # define the anchors
-    anchors = [[116, 90, 156, 198, 373, 326], [30, 61, 62, 45, 59, 119], [10, 13, 16, 30, 33, 23]]
-    # define the probability threshold for detected objects
-    class_threshold = 0.6
+
     boxes = list()
     for i in range(len(yhat)):
         # decode the output of the network
@@ -205,23 +218,8 @@ def inference(photo_filename):
     correct_yolo_boxes(boxes, image_h, image_w, input_h, input_w)
     # suppress non-maximal boxes
     do_nms(boxes, 0.5)
-    # define the labels
-    labels = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck",
-              "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
-              "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe",
-              "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard",
-              "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard",
-              "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana",
-              "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake",
-              "chair", "sofa", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse",
-              "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator",
-              "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
     # get the details of the detected objects
     v_boxes, v_labels, v_scores = get_boxes(boxes, labels, class_threshold)
-
-    # summarize what we found
-    # for i in range(len(v_boxes)):
-        # print(v_labels[i], v_scores[i])
 
     # draw what we found
     draw_boxes(photo_filename, v_boxes, v_labels, v_scores)
