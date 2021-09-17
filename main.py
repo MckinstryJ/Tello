@@ -1,7 +1,7 @@
 """
 
     APPLYING CV TO LIVE VIDEO STREAM
-    - if video error turn off firewall
+    - if video error turn off public firewall
 
 """
 import sys
@@ -46,9 +46,6 @@ def main():
                     frame_skip = frame_skip - 1
                     continue
                 start_time = time.time()
-                # image = cv2.cvtColor(numpy.array(frame.to_image()), cv2.COLOR_RGB2BGR)
-                # cv2.imshow('Original', image)
-                # cv2.imshow('Canny', cv2.Canny(image, 100, 200))
 
                 img = model(frame.to_image()).render()[0]
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -78,5 +75,6 @@ def main():
 
 
 if __name__ == '__main__':
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    # v5x6 is their current best
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5x6')
     main()
