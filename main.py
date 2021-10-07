@@ -47,12 +47,17 @@ def main():
                     continue
                 start_time = time.time()
 
-                img = model(frame.to_image()).render()[0]
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                frame_ = model(frame.to_image())
+                # xmin ymin xmax ymax confidence class name
+                print(frame_.pandas().xyxy[0])
 
-                cv2.imshow('Applied CV', img)
-                # video writer
-                Output.write(cv2.resize(img, (640, 480)))
+                # # Convert Image to Color
+                # img = cv2.cvtColor(frame_[0], cv2.COLOR_RGB2BGR)
+                #
+                # # View Image
+                # cv2.imshow('Applied CV', img)
+                # # video writer
+                # Output.write(cv2.resize(img, (640, 480)))
 
                 # press ESC to end stream
                 if cv2.waitKey(1) == 27:
@@ -76,5 +81,5 @@ def main():
 
 if __name__ == '__main__':
     # v5x6 is their current best
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5x6')
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     main()
