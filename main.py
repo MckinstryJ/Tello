@@ -8,16 +8,18 @@ import sys
 import traceback
 import tellopy
 import av
-import cv2.cv2 as cv2  # for avoidance of pylint error
-import numpy as np
+import cv2.cv2 as cv2
 import time
 import torch
+from Actions import *
 
 filename = "C:/Users/McKinstryJohn/Desktop/Python/Tello/vids/output.avi"
 codec = cv2.VideoWriter_fourcc("X", "V", "I", "D")
 frame_rate = 30
 resolution = (640, 480)
 Output = cv2.VideoWriter(filename, codec, frame_rate, resolution)
+
+trace_print = False
 
 
 def main():
@@ -35,11 +37,13 @@ def main():
             try:
                 container = av.open(drone.get_video_stream())
             except av.AVError as ave:
-                print(ave)
-                print('retry...')
+                if trace_print:
+                    print(ave)
+                    print('retry...')
 
-        # skip first 300 frames
-        frame_skip = 300
+        frame_skip = 300  # skip first N frames
+
+        drone.takeoff()
         while time.time() - start < 20:
             for frame in container.decode(video=0):
                 if 0 < frame_skip:
@@ -49,15 +53,7 @@ def main():
 
                 frame_ = model(frame.to_image())
                 # xmin ymin xmax ymax confidence class name
-                print(frame_.pandas().xyxy[0])
-
-                # # Convert Image to Color
-                # img = cv2.cvtColor(frame_[0], cv2.COLOR_RGB2BGR)
-                #
-                # # View Image
-                # cv2.imshow('Applied CV', img)
-                # # video writer
-                # Output.write(cv2.resize(img, (640, 480)))
+                find(drone, frame_.pandas().xyxy[0], obj)
 
                 # press ESC to end stream
                 if cv2.waitKey(1) == 27:
@@ -68,11 +64,13 @@ def main():
                 else:
                     time_base = frame.time_base
                 frame_skip = int((time.time() - start_time) / time_base)
+        drone.land()
 
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_exception(exc_type, exc_value, exc_traceback)
-        print(ex)
+        if trace_print:
+            print(ex)
     finally:
         drone.quit()
         cv2.destroyAllWindows()
@@ -80,6 +78,7 @@ def main():
 
 
 if __name__ == '__main__':
+    obj = 'person'
     # v5x6 is their current best
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     main()
