@@ -58,10 +58,11 @@ def find(drone, data, obj=""):
             elif len(objs) > 0:
                 obj = objs
 
+            shift_y = 0  # none for x so it will continue rotating if it can't find it
             if len(obj) > 0:
                 print(obj)
-                rotate_x = FRAME_X_MAX / 2. - obj['xmax'].values[0]  # neg => counterclockwise rotation
-                shift_y = FRAME_Y_MAX / 2. - obj['ymax'].values[0]  # neg => drop in alt.
+                rotate_x = FRAME_X_MAX / 2. - obj['xmax'].iloc[0]  # neg => counterclockwise rotation
+                shift_y = FRAME_Y_MAX / 2. - obj['ymax'].iloc[0]  # neg => drop in alt.
 
                 # Move to align 'obj' with center
                 if shift_y > THRES:

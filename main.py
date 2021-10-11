@@ -43,7 +43,6 @@ def main():
 
         frame_skip = 300  # skip first N frames
 
-        drone.takeoff()
         while time.time() - start < 20:
             for frame in container.decode(video=0):
                 if 0 < frame_skip:
@@ -64,7 +63,6 @@ def main():
                 else:
                     time_base = frame.time_base
                 frame_skip = int((time.time() - start_time) / time_base)
-        drone.land()
 
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
