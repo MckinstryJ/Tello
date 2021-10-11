@@ -43,6 +43,7 @@ def main():
 
         frame_skip = 300  # skip first N frames
 
+        drone.takeoff()
         while time.time() - start < 20:
             for frame in container.decode(video=0):
                 if 0 < frame_skip:

@@ -5,7 +5,7 @@
 FRAME_X_MAX = 800
 FRAME_Y_MAX = 800
 SPEED = 30
-THRES = 10
+THRES = 0
 
 
 def find_clearing_to_land():
@@ -58,7 +58,6 @@ def find(drone, data, obj=""):
             elif len(objs) > 0:
                 obj = objs
 
-            shift_y = 0  # none for x so it will continue rotating if it can't find it
             if len(obj) > 0:
                 print(obj)
                 rotate_x = FRAME_X_MAX / 2. - obj['xmax'].iloc[0]  # neg => counterclockwise rotation
@@ -66,14 +65,14 @@ def find(drone, data, obj=""):
 
                 # Move to align 'obj' with center
                 if shift_y > THRES:
-                    drone.down(SPEED)
-                elif shift_y < -THRES:
                     drone.up(SPEED)
+                elif shift_y < -THRES:
+                    drone.down(SPEED)
 
                 if rotate_x > THRES:
-                    drone.counter_clockwise(SPEED)
-                elif rotate_x < -THRES:
                     drone.clockwise(SPEED)
+                elif rotate_x < -THRES:
+                    drone.counter_clockwise(SPEED)
 
 
 def move_towards(obj=""):
